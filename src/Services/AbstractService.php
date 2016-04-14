@@ -40,6 +40,9 @@ abstract class AbstractService
     /** @var \Ivory\GoogleMap\Services\BusinessAccount */
     protected $businessAccount;
 
+    /** @var string */
+    protected $apiKey;
+
     /**
      * Creates a service.
      *
@@ -223,6 +226,25 @@ abstract class AbstractService
     }
 
     /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string $apiKey
+     *
+     * @return AbstractService
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+        return $this;
+    }
+
+    /**
      * Sign an url for business account.
      *
      * @param string $url The url.
@@ -231,11 +253,15 @@ abstract class AbstractService
      */
     protected function signUrl($url)
     {
-        if (!$this->hasBusinessAccount()) {
-            return $url;
+        if ($this->hasBusinessAccount()) {
+            return $this->businessAccount->signUrl($url);
         }
 
-        return $this->businessAccount->signUrl($url);
+        if ($this->apiKey) {
+            return $url . '&key=' . $this->apiKey;
+        }
+
+        return $url;
     }
 
     /**

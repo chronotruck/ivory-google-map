@@ -161,7 +161,7 @@ class AbstractServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->service->getBusinessAccount());
     }
 
-    public function testSignUrlWithoutBusinessAccount()
+    public function testSignUrlWithoutBusinessAccountAndApiKey()
     {
         $method = new \ReflectionMethod($this->service, 'signUrl');
         $method->setAccessible(true);
@@ -169,6 +169,18 @@ class AbstractServiceTest extends \PHPUnit_Framework_TestCase
         $url = 'http://maps.googleapis.com/maps/api/staticmap?center=%E4%B8%8A%E6%B5%B7+%E4%B8%AD%E5%9C%8B&size=640x640&zoom=10&sensor=false';
 
         $this->assertSame($url, $method->invoke($this->service, $url));
+    }
+
+    public function testSignUrlWithApiKey()
+    {
+        $method = new \ReflectionMethod($this->service, 'signUrl');
+        $method->setAccessible(true);
+        $this->service->setApiKey('ABCD');
+
+        $url = 'http://maps.googleapis.com/maps/api/staticmap?center=%E4%B8%8A%E6%B5%B7+%E4%B8%AD%E5%9C%8B&size=640x640&zoom=10&sensor=false';
+        $expected = 'http://maps.googleapis.com/maps/api/staticmap?center=%E4%B8%8A%E6%B5%B7+%E4%B8%AD%E5%9C%8B&size=640x640&zoom=10&sensor=false&key=ABCD';
+
+        $this->assertEquals($expected, $method->invoke($this->service, $url));
     }
 
     public function testSignUrlWithBusinessAccount()
